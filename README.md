@@ -15,6 +15,7 @@ of Hyperspectral Data: A Comparative Review](https://arxiv.org/pdf/1904.10674.pd
 ## Datasets
 * [Overview](http://www.ehu.eus/ccwintco/index.php?title=Hyperspectral_Remote_Sensing_Scenes)
 * [Indian Pine](https://purr.purdue.edu/publications/1947/1)
+* [Data Fusion Contest 2018](https://mediatum.ub.tum.de/1474000?id=1474000)
 
 ## Why
 Hyper-spectral imaging is a upcoming field that [has potential](https://www.cloudagronomics.com/technology) in the agriculture industry with many benefits including crop yield and carbon monitoring.

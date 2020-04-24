@@ -19,3 +19,14 @@ of Hyperspectral Data: A Comparative Review](https://arxiv.org/pdf/1904.10674.pd
 
 ## Why
 Hyper-spectral imaging is a upcoming field that [has potential](https://www.cloudagronomics.com/technology) in the agriculture industry with many benefits including crop yield and carbon monitoring.
+
+## Paper Review
+* Rigor vs. Empirical - Balanced?
+* Readability - Excellent
+* Algorithm Difficulty - Low
+* Pseudo Code - None / Step-Code?
+* Hyperparameters Specified - Yes
+* Compute Needed - GPU
+* Number of Equations - 2
+* Number of Tables - 5
+Conclusion: We believe the paper is highly reproducible and very well documented. The only potential issue we foresee is within the preprocessing phase.

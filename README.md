@@ -31,12 +31,14 @@ Hyper-spectral imaging is a upcoming field that [has potential](https://www.clou
 * Number of Tables - 5
 
 ## Paper Notes
-* Proposes a hybrid 3d and 2d model for general hyperspectral image classification
+* Proposes a hybrid 3d and 2d model for general hyperspectral image(HSI) classification
 * 3-D CNN: Employs principal component analysis on input data to reduce spatio-spectral images by its spectral bands(depth) in order to remove spatial redundancy
   - 3D convolution → 3D kernel convolves on 3D-data(spatio-spectral image)
   - Uses 3d patches to determine image classification
   - 3D patches: overlapping spatio-spectral convolutions where the centered pixel is used for classification
   - Computationally expensive
+  - Papers recommend 3 layered model to extract spectral features
+    - One paper dubs this the Deep Metric Learning followed by a Conditional Random Field layer to make predictions
 * 2-D CNN: Input data is convolved with 2d kernels(normal)
 * Hybrid of both 3D and 2D Kernels are used for learning
   - Use of 3D convolutions to capture spatial data and 2D convolutions to decrease computational expense and learn non-spectral information (features of images for classification)

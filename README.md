@@ -29,4 +29,5 @@ Hyper-spectral imaging is a upcoming field that [has potential](https://www.clou
 * Compute Needed - GPU
 * Number of Equations - 2
 * Number of Tables - 5
+
 Conclusion: We believe the paper is highly reproducible and very well documented. The only potential issue we foresee is within the preprocessing phase.

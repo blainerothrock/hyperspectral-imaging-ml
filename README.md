@@ -1,4 +1,5 @@
 # hyperspectral-imaging-ml
+![Test](https://github.com/blainerothrock/hyperspectral-imaging-ml/workflows/Test/badge.svg)
 
 ## Papers:
 * [Deep Learning for Classification

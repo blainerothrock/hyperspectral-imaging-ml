@@ -14,11 +14,15 @@ jobs:
       with:
         python-version: 3.7
     - uses: actions/checkout@v2
-    - name: Update Conda environment with "environment.yml"
-      uses: matthewrmshin/conda-action@v1
-      with:
-        args: conda env update -f ./environment.yml
+    - name: Setup Miniconda
+        uses: goanpeca/setup-miniconda@v1.1.2
+        with:
+          environment-file: environment.yml
+          activate-environment: hyperspec
+          python-version: 3.7
+          auto-update-conda: true
     - name: pytest
+      shell: bash -l {0}
       run: |
         pip install pytest
         pip install pytest-cov

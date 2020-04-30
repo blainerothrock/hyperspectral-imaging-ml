@@ -1,0 +1,29 @@
+name: Test
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v1.2.0
+      with:
+        python-version: 3.7
+    - uses: actions/checkout@v2
+    - name: Setup Miniconda
+      uses: goanpeca/setup-miniconda@v1.1.2
+      with:
+        environment-file: environment.yml
+        activate-environment: hyperspec
+        python-version: 3.7
+        auto-update-conda: true
+    - name: pytest
+      shell: bash -l {0}
+      run: |
+        pip install pytest
+        pip install pytest-cov
+        python -m pytest --cov=seisml --cov-report=xml --cov-report=html

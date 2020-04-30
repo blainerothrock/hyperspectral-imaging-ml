@@ -1,6 +1,8 @@
 name: hyperspec
 channels:
   - defaults
+  - pytorch
+  - conda-forge
 dependencies:
   - asn1crypto=1.3.0=py37_0
   - attrs=19.3.0=py_0

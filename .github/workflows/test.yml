@@ -26,4 +26,7 @@ jobs:
       run: |
         pip install pytest
         pip install pytest-cov
-        python -m pytest --cov=hyperspec --cov-report=xml --cov-report=html
+        python -m pytest --cov=hyperspec --cov-report=xml
+    - uses: codecov/codecov-action@v1
+      with:
+        file: ./coverage.xml

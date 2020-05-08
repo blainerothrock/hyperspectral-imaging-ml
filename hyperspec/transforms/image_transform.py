@@ -17,7 +17,13 @@ class ImageTransform(BaseTransform):
     inplace):
         super().__init__(source, output, inplace)
 
+
     def padWithZeros(X, margin=2):
+        """
+        :param X: A numpy array of shape (x, y, z)
+        :param margin: The amount of padding applied to the first two dimensions -- third dimension left unchanged.
+        :return: A padded numpy array of shape (x+margin, y+margin, z)
+        """
         newX = np.zeros((X.shape[0] + 2 * margin, X.shape[1] + 2 * margin, X.shape[2]))
         x_offset = margin
         y_offset = margin

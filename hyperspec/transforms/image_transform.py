@@ -18,7 +18,7 @@ class ImageTransform(BaseTransform):
         super().__init__(source, output, inplace)
 
 
-    def padWithZeros(X, margin=2):
+    def pad_with_zeros(X, margin=2):
         """
         Pads a 3-dimensional numpy array with zeros around the first two dimensions.
         :param X: A 3-dimensional numpy array of size (x, y, z) where x == y == z.
@@ -31,7 +31,7 @@ class ImageTransform(BaseTransform):
         newX[x_offset:X.shape[0] + x_offset, y_offset:X.shape[1] + y_offset, :] = X
         return newX
 
-    def createImageCubes(X, y, windowSize=5, removeZeroLabels = True):
+    def create_image_cubes(X, y, windowSize=5, removeZeroLabels = True):
         """
         :param X: A 3-dimensional numpy array of size (x, y, z) where x == y == z.
         :param y:

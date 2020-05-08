@@ -18,7 +18,7 @@ class PCA(BaseTransform):
     inplace):
         super().__init__(source, output, inplace)
 
-    def applyPCA(X, numComponents=75):
+    def apply_pca(X, numComponents=75):
         """
         Applies PCA to the input array X.
         :param X: A 3-dimensional numpy array of size (x, y, z) where x == y == z.

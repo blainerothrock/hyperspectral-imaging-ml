@@ -20,7 +20,8 @@ class ImageTransform(BaseTransform):
 
     def padWithZeros(X, margin=2):
         """
-        :param X: A numpy array of shape (x, y, z)
+        Pads a 3-dimensional numpy array with zeros around the first two dimensions.
+        :param X: A 3-dimensional numpy array of size (x, y, z) where x == y == z.
         :param margin: The amount of padding applied to the first two dimensions -- third dimension left unchanged.
         :return: A padded numpy array of shape (x+margin, y+margin, z)
         """
@@ -31,6 +32,13 @@ class ImageTransform(BaseTransform):
         return newX
 
     def createImageCubes(X, y, windowSize=5, removeZeroLabels = True):
+        """
+        :param X: A 3-dimensional numpy array of size (x, y, z) where x == y == z.
+        :param y:
+        :param windowSize:
+        :param removeZeroLabels:
+        :return:
+        """
         margin = int((windowSize - 1) / 2)
         zeroPaddedX = X.padWithZeros(X, margin=margin)
         # split patches

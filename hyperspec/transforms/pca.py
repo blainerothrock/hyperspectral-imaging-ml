@@ -20,9 +20,10 @@ class PCA(BaseTransform):
 
     def applyPCA(X, numComponents=75):
         """
+        Applies PCA to the input array X.
         :param X: A 3-dimensional numpy array of size (x, y, z) where x == y == z.
         :param numComponents: The number of components to keep.
-        :return: A 3-dimensional numpy array with PCA applied to it and the PCA object itself.
+        :return: A 3-dimensional numpy array of size (x, y, numComponents) and the PCA object itself.
         """
         newX = np.reshape(X, (-1, X.shape[2]))
         pca = sklearnPCA(n_components=numComponents, whiten=True)

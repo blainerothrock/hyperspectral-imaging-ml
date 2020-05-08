@@ -17,19 +17,19 @@ class ImageTransform(BaseTransform):
     inplace):
         super().__init__(source, output, inplace)
 
-    def padWithZeros(self, margin=2):
-        newX = np.zeros((self.shape[0] + 2 * margin, self.shape[1] + 2 * margin, self.shape[2]))
+    def padWithZeros(X, margin=2):
+        newX = np.zeros((X.shape[0] + 2 * margin, X.shape[1] + 2 * margin, X.shape[2]))
         x_offset = margin
         y_offset = margin
-        newX[x_offset:self.shape[0] + x_offset, y_offset:self.shape[1] + y_offset, :] = self
+        newX[x_offset:X.shape[0] + x_offset, y_offset:X.shape[1] + y_offset, :] = X
         return newX
 
-    def createImageCubes(self, y, windowSize=5, removeZeroLabels = True):
+    def createImageCubes(X, y, windowSize=5, removeZeroLabels = True):
         margin = int((windowSize - 1) / 2)
-        zeroPaddedX = self.padWithZeros(self, margin=margin)
+        zeroPaddedX = X.padWithZeros(X, margin=margin)
         # split patches
-        patchesData = np.zeros((self.shape[0] * self.shape[1], windowSize, windowSize, self.shape[2]))
-        patchesLabels = np.zeros((self.shape[0] * self.shape[1]))
+        patchesData = np.zeros((X.shape[0] * X.shape[1], windowSize, windowSize, X.shape[2]))
+        patchesLabels = np.zeros((X.shape[0] * X.shape[1]))
         patchIndex = 0
         for r in range(margin, zeroPaddedX.shape[0] - margin):
             for c in range(margin, zeroPaddedX.shape[1] - margin):

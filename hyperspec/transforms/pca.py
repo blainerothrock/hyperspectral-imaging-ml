@@ -18,9 +18,9 @@ class PCA(BaseTransform):
     inplace):
         super().__init__(source, output, inplace)
 
-    def applyPCA(self, numComponents=75):
-        newX = np.reshape(self, (-1, self.shape[2]))
+    def applyPCA(X, numComponents=75):
+        newX = np.reshape(X, (-1, X.shape[2]))
         pca = PCA(n_components=numComponents, whiten=True)
         newX = pca.fit_transform(newX)
-        newX = np.reshape(newX, (self.shape[0], self.shape[1], numComponents))
+        newX = np.reshape(newX, (X.shape[0], X.shape[1], numComponents))
         return newX, pca

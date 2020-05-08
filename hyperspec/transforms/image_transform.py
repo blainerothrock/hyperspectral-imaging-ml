@@ -2,7 +2,7 @@ from . import TransformException, BaseTransform
 
 import numpy as np
 
-class Preprocessing(BaseTransform):
+class ImageTransform(BaseTransform):
     """
     Args:
     Raises:

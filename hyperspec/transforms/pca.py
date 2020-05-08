@@ -3,7 +3,7 @@ from . import TransformException, BaseTransform
 import numpy as np
 from sklearn.decomposition import PCA
 
-class Preprocessing(BaseTransform):
+class PCA(BaseTransform):
     """
     Args:
     Raises:

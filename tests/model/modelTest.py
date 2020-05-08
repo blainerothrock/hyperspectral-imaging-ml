@@ -1,4 +1,6 @@
 import pytest
 
-def test_Model(input):
-    assert len(model(input)) == 16
+
+class TestModel:
+    def test_Model(input):
+        assert len(model(input)) == 16

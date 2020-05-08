@@ -1,6 +1,5 @@
 import pytest
-from hyperspec.transforms.to_tensor import ToTensor
-from hyperspec.transforms.transform_exception import TransformException
+from hyperspec.transforms import ToTensor, BaseTransform, TransformException
 import torch
 import numpy as np
 

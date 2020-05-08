@@ -1,4 +1,5 @@
 import pytest
+from hyperspec.transforms import PCA, BaseTransform, TransformException
 
 
 class TestPCATransform:

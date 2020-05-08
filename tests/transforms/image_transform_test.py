@@ -1,4 +1,5 @@
 import pytest
+from hyperspec.transforms import ImageTransform, BaseTransform, TransformException
 
 
 class TestImageTransform:

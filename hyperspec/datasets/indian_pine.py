@@ -1,7 +1,11 @@
-import os, requests
-from tqdm import tqdm
+import os
+from hyperspec.utility.download import download_file, DatasetURL
+from hyperspec import DATA_PATH
+from torch.utils.data import Dataset
+from scipy import io
+import numpy as np
 
-class IndianPineDataset:
+class IndianPineDataset(Dataset):
     """
     Indian Pine Hyperspectral dataset (Purdue University)
 
@@ -9,31 +13,28 @@ class IndianPineDataset:
         TODO:
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, force_download=False, patch_size=1):
 
-    def download_data(self):
-        download_path = os.path.expanduser('~/.hyperspec/data/')
-        url = 'https://purr.purdue.edu/publications/1947/serve/1?render=archive'
+        file_name = 'indian_pines_corrected.mat'
+        self.corrected_path = os.path.join(DATA_PATH, file_name)
+        if not os.path.isfile(self.corrected_path) or force_download:
+            download_file(DatasetURL.INDIAN_PINES_CORRECTED.value, file_name)
 
-        file_path = os.path.join(download_path, 'indian_pines.zip')
-        with open(file_path, 'wb') as f:
-            print('downloading %s' % file_path)
-            res = requests.get(url, stream=True)
-            total_size = int(res.headers.get('Content-Length'))
+        file_name = 'indian_pines_groundtruth.mat'
+        self.gt_path = os.path.join(DATA_PATH, file_name)
+        if not os.path.isfile(self.gt_path) or force_download:
+            download_file(DatasetURL.INDIAN_PINES_GROUNDTRUTH.value, file_name)
 
-            pbar = tqdm(
-                total=total_size,
-                initial=0,
-                unit='B',
-                unit_scale=True,
-                desc=file_path.split('/')[-1]
-            )
+        img = io.loadmat(self.corrected_path)
+        self.img = img['indian_pines_corrected']
 
-            if total_size is None:
-                f.write(res.content)
-            else:
-                for data in res.iter_content(chunk_size=4096):
-                    f.write(data)
-                    pbar.update(4096)
-        pbar.close()
+        self.rgb_bands = (43, 21, 11)  # AVIRIS sensor
+
+        self.gt = io.loadmat(self.gt_path)['indian_pines_gt']
+        self.labels = ["Undefined", "Alfalfa", "Corn-notill", "Corn-mintill",
+                        "Corn", "Grass-pasture", "Grass-trees",
+                        "Grass-pasture-mowed", "Hay-windrowed", "Oats",
+                        "Soybean-notill", "Soybean-mintill", "Soybean-clean",
+                        "Wheat", "Woods", "Buildings-Grass-Trees-Drives",
+                        "Stone-Steel-Towers"]
+

@@ -2,23 +2,54 @@ from . import TransformException, BaseTransform
 
 import numpy as np
 
+
 class ImageTransform(BaseTransform):
     """
+    Preprocesses the raw images.
     Args:
+        X: (numpy array): A 3-dimensional numpy array of size (x, y, z) where x == y and z == numComponents.
+        y (numpy array): A 2-dimensional numpy array of size (x, y) where x == y == X.shape[0] == X.shape[1].
+        windowSize (int): The size of the patches to extract features from the original feature input.
+        removeZeroLabels (Bool): Boolean which determines whether or not zero labels are removed.
+        source (string): the data source to filter, default: raw
+        output (string): optional, the key of the output data in the dictionary, default: filtered
+        inplace (Bool): optional, will overwrite the source data with the trim
     Raises:
-        TransformException
+        TransformException: if a filter in not in a supporting list
     Returns:
+        patchesData (numpy array): A 4-dimensional numpy array of size (x, y, z, w)
+                    where x == X.shape[0]**2 and y == z == windowSize and w == numComponents.
+        patchesLabel (numpy array): A 1-dimensional numpy array of size (x)
+                    where x == patchesData.shape[0] == X.shape[0]**2.
     """
 
-    def __init__(
-            self,
-    source,
-    output,
-    inplace):
-        super().__init__(source, output, inplace)
+    # def __init__(self, X, y, windowSize=5, removeZeroLabels=True, source='raw', output='transformed', inplace=False):
+    #     super().__init__(source, output, inplace)
+    #
+    #     self.X = X
+    #     self.y = y
+    #     self.windowSize = windowSize
+    #     self.removeZeroLabels = removeZeroLabels
+    #
+    # def __call__(self, patchesData, patchesLabel):
+    #     super().__call__(patchesData, patchesLabel)
+    #
+    #     transformed = patchesData[self.source].copy()
+    #
+    #     transformed.create_image_cubes()
+    #
+    #     return super().update(patchesData, patchesLabel, transformed)
+    #
+    # def __repr__(self):
+    #     return (
+    #         f'{self.__class__.__name__}('
+    #         f'X: {self.X}, '
+    #         f'y: {self.y}, '
+    #         f'windowSize: {self.windowSize}, '
+    #         f'removeZeroLabels: {self.removeZeroLabels})'
+    #     )
 
-
-    def pad_with_zeros(X, margin=2):
+    def pad_with_zeros(self, X, margin=2):
         """
         Pads a 3-dimensional numpy array with zeros around the first two dimensions.
         :param X: A 3-dimensional numpy array of size (x, y, z) where x == y == z.
@@ -31,16 +62,19 @@ class ImageTransform(BaseTransform):
         newX[x_offset:X.shape[0] + x_offset, y_offset:X.shape[1] + y_offset, :] = X
         return newX
 
-    def create_image_cubes(X, y, windowSize=5, removeZeroLabels = True):
+    def create_image_cubes(self, X, y, windowSize=5, removeZeroLabels = True):
         """
-        :param X: A 3-dimensional numpy array of size (x, y, z) where x == y == z.
-        :param y:
-        :param windowSize:
-        :param removeZeroLabels:
-        :return:
+        :param X: (features) A 3-dimensional numpy array of size (x, y, z) where x == y and z == numComponents.
+        :param y: (labels) A 2-dimensional numpy array of size (x, y) where x == y == X.shape[0] == X.shape[1].
+        :param windowSize: The size of the patches to extract features from the original feature input.
+        :param removeZeroLabels: Boolean which determines whether or not zero labels are removed.
+        :return: patchesData: (feature patches) A 4-dimensional numpy array of size (x, y, z, w)
+                    where x == X.shape[0]**2 and y == z == windowSize and w == numComponents.
+                 patchesLabels: (label patches) A 1-dimensional numpy array of size (x)
+                    where x == patchesData.shape[0] == X.shape[0]**2.
         """
         margin = int((windowSize - 1) / 2)
-        zeroPaddedX = X.padWithZeros(X, margin=margin)
+        zeroPaddedX = self.pad_with_zeros(X, margin=margin) # 3-dim numpy array of size (x+margin, y+margin, z)
         # split patches
         patchesData = np.zeros((X.shape[0] * X.shape[1], windowSize, windowSize, X.shape[2]))
         patchesLabels = np.zeros((X.shape[0] * X.shape[1]))

@@ -1,3 +1,5 @@
 import os
 from pathlib import Path
-Path(os.path.expanduser('~/.hyperspec/data')).mkdir(parents=True, exist_ok=True)
+
+DATA_PATH = os.path.expanduser('~/.hyperspec/data')
+Path(DATA_PATH).mkdir(parents=True, exist_ok=True)

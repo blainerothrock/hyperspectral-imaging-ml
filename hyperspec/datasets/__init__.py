@@ -1,0 +1,1 @@
+from .indian_pine import IndianPineDataset

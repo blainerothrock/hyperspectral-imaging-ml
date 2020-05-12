@@ -1,9 +1,12 @@
 import os
+import torch
 from hyperspec.utility.download import download_file, DatasetURL
+from hyperspec.transforms import Compose, PCA, ImageTransform
 from hyperspec import DATA_PATH
 from torch.utils.data import Dataset
 from scipy import io
 import numpy as np
+
 
 class IndianPineDataset(Dataset):
     """
@@ -13,7 +16,10 @@ class IndianPineDataset(Dataset):
         TODO:
     """
 
-    def __init__(self, force_download=False, patch_size=1):
+    def __init__(self, force_download=False, patch_size=1, K=30, window_size=25):
+
+        self.K = K
+        self.window_size = window_size
 
         file_name = 'indian_pines_corrected.mat'
         self.corrected_path = os.path.join(DATA_PATH, file_name)
@@ -32,9 +38,27 @@ class IndianPineDataset(Dataset):
 
         self.gt = io.loadmat(self.gt_path)['indian_pines_gt']
         self.labels = ["Undefined", "Alfalfa", "Corn-notill", "Corn-mintill",
-                        "Corn", "Grass-pasture", "Grass-trees",
-                        "Grass-pasture-mowed", "Hay-windrowed", "Oats",
-                        "Soybean-notill", "Soybean-mintill", "Soybean-clean",
-                        "Wheat", "Woods", "Buildings-Grass-Trees-Drives",
-                        "Stone-Steel-Towers"]
+                       "Corn", "Grass-pasture", "Grass-trees",
+                       "Grass-pasture-mowed", "Hay-windrowed", "Oats",
+                       "Soybean-notill", "Soybean-mintill", "Soybean-clean",
+                       "Wheat", "Woods", "Buildings-Grass-Trees-Drives",
+                       "Stone-Steel-Towers"]
 
+        self.preprocess()
+
+    def preprocess(self):
+        processed_path = os.path.join(DATA_PATH, 'ip/prepared/')
+
+        # TODO: provide a better check for if process data exists
+        if os.path.isdir(processed_path): return
+
+        os.makedirs(processed_path)
+
+        # apply PCA 20 => 30 dimensions
+        img, pca = PCA.apply_pca(self.img, self.K)
+
+        IT = ImageTransform()
+        patchesX, patchesY = IT.create_image_cubes(img, self.gt, self.window_size, device=torch.device('cuda'))
+        to_save = {'X': patchesX.cpu().numpy(), 'y': patchesY.cpu().numpy()}
+        torch.save(to_save, open(os.path.join(processed_path, 'ip_prepared.pt'), 'wb'))
+        print()

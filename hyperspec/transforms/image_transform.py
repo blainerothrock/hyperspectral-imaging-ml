@@ -1,6 +1,7 @@
 from . import TransformException, BaseTransform
 
 import numpy as np
+import torch
 
 
 class ImageTransform(BaseTransform):
@@ -9,7 +10,7 @@ class ImageTransform(BaseTransform):
     Args:
         X: (numpy array): A 3-dimensional numpy array of size (x, y, z) where x == y and z == numComponents.
         y (numpy array): A 2-dimensional numpy array of size (x, y) where x == y == X.shape[0] == X.shape[1].
-        windowSize (int): The size of the patches to extract features from the original feature input.
+        window_size (int): The size of the patches to extract features from the original feature input.
         removeZeroLabels (Bool): Boolean which determines whether or not zero labels are removed.
         source (string): the data source to filter, default: raw
         output (string): optional, the key of the output data in the dictionary, default: filtered
@@ -23,33 +24,34 @@ class ImageTransform(BaseTransform):
                     where x == patchesData.shape[0] == X.shape[0]**2.
     """
 
-    # def __init__(self, X, y, windowSize=5, removeZeroLabels=True, source='raw', output='transformed', inplace=False):
-    #     super().__init__(source, output, inplace)
-    #
-    #     self.X = X
-    #     self.y = y
-    #     self.windowSize = windowSize
-    #     self.removeZeroLabels = removeZeroLabels
-    #
-    # def __call__(self, patchesData, patchesLabel):
-    #     super().__call__(patchesData, patchesLabel)
-    #
-    #     transformed = patchesData[self.source].copy()
-    #
-    #     transformed.create_image_cubes()
-    #
-    #     return super().update(patchesData, patchesLabel, transformed)
-    #
-    # def __repr__(self):
-    #     return (
-    #         f'{self.__class__.__name__}('
-    #         f'X: {self.X}, '
-    #         f'y: {self.y}, '
-    #         f'windowSize: {self.windowSize}, '
-    #         f'removeZeroLabels: {self.removeZeroLabels})'
-    #     )
+    def __init__(self, window_size=5, removeZeroLabels=True, source='raw', output='transformed', inplace=False):
+        super().__init__(source, output, inplace)
 
-    def pad_with_zeros(self, X, margin=2):
+        self.windowSize = window_size
+        self.removeZeroLabels = removeZeroLabels
+
+    def __call__(self, data):
+
+        # check if data contains 'labels'
+        # {'src': (img, label)}
+
+        super().__call__(data)
+
+        img, labels = data[self.source]
+        img, labels = self._create_image_cubes(img, labels)
+
+        return super().update(data, (img, labels))
+
+    def __repr__(self):
+        return (
+            f'{self.__class__.__name__}('
+            f'X: {self.X}, '
+            f'y: {self.y}, '
+            f'windowSize: {self.windowSize}, '
+            f'removeZeroLabels: {self.removeZeroLabels})'
+        )
+
+    def _pad_with_zeros(self, X, margin):
         """
         Pads a 3-dimensional numpy array with zeros around the first two dimensions.
         :param X: A 3-dimensional numpy array of size (x, y, z) where x == y == z.
@@ -62,7 +64,7 @@ class ImageTransform(BaseTransform):
         newX[x_offset:X.shape[0] + x_offset, y_offset:X.shape[1] + y_offset, :] = X
         return newX
 
-    def create_image_cubes(self, X, y, windowSize=5, removeZeroLabels = True):
+    def _create_image_cubes(self, X, y):
         """
         :param X: (features) A 3-dimensional numpy array of size (x, y, z) where x == y and z == numComponents.
         :param y: (labels) A 2-dimensional numpy array of size (x, y) where x == y == X.shape[0] == X.shape[1].
@@ -73,10 +75,10 @@ class ImageTransform(BaseTransform):
                  patchesLabels: (label patches) A 1-dimensional numpy array of size (x)
                     where x == patchesData.shape[0] == X.shape[0]**2.
         """
-        margin = int((windowSize - 1) / 2)
-        zeroPaddedX = self.pad_with_zeros(X, margin=margin) # 3-dim numpy array of size (x+margin, y+margin, z)
+        margin = int((self.windowSize - 1) / 2)
+        zeroPaddedX = self._pad_with_zeros(X, margin=margin) # 3-dim numpy array of size (x+margin, y+margin, z)
         # split patches
-        patchesData = np.zeros((X.shape[0] * X.shape[1], windowSize, windowSize, X.shape[2]))
+        patchesData = np.zeros((X.shape[0] * X.shape[1], self.windowSize, self.windowSize, X.shape[2]))
         patchesLabels = np.zeros((X.shape[0] * X.shape[1]))
         patchIndex = 0
         for r in range(margin, zeroPaddedX.shape[0] - margin):
@@ -85,7 +87,7 @@ class ImageTransform(BaseTransform):
                 patchesData[patchIndex, :, :, :] = patch
                 patchesLabels[patchIndex] = y[r-margin, c-margin]
                 patchIndex = patchIndex + 1
-        if removeZeroLabels:
+        if self.removeZeroLabels:
             patchesData = patchesData[patchesLabels>0,:,:,:]
             patchesLabels = patchesLabels[patchesLabels>0]
             patchesLabels -= 1

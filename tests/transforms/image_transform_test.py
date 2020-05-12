@@ -8,22 +8,24 @@ class TestImageTransform:
         nonPadX = np.zeros((5,5,5))
         margin = 2
         IT = ImageTransform()
-        padX = IT.pad_with_zeros(nonPadX, margin)
+        padX = IT._pad_with_zeros(nonPadX, margin)
         assert nonPadX.shape != padX.shape
         assert nonPadX.shape == (5,5,5)
         assert padX.shape == (nonPadX.shape[0]+ 2*margin, nonPadX.shape[1]+ 2*margin, 5)
         pass
 
     def test_createImageCubes(self):
-        X = np.zeros((145, 145, 30))
-        Y = np.ones((145, 145))
-        windowSize = 25
-        IT = ImageTransform()
-        patchesX, patchesY =  IT.create_image_cubes(X, Y, windowSize)
+        X = np.zeros((50, 50, 10))
+        Y = np.ones((50, 50))
+        window_size = 2
+        IT = ImageTransform(window_size=window_size, inplace=True)
+        data = {'raw': (X, Y)}
+        data = IT(data)
+        patchesX, patchesY = data['raw']
         assert X.shape != patchesX.shape
         assert Y.shape != patchesY.shape
         assert patchesX.shape[0] == X.shape[0]**2
-        assert patchesX.shape[1] == patchesX.shape[2] == windowSize
+        assert patchesX.shape[1] == patchesX.shape[2] == window_size
         assert patchesX.shape[3] == X.shape[2]
         assert patchesY.shape[0] == patchesX.shape[0]
         pass

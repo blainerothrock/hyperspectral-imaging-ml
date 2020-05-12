@@ -6,4 +6,4 @@ class TestIndianPineDataset:
 
     # TODO: placeholder tests
     def test_initialization(self):
-        ds = IndianPineDataset()
+        pass

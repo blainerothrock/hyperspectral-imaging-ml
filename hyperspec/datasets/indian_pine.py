@@ -1,4 +1,6 @@
 import os
+import shutil
+
 import torch
 from hyperspec.utility.download import download_file, DatasetURL
 from hyperspec.transforms import Compose, PCA, ImageTransform
@@ -50,12 +52,14 @@ class IndianPineDataset(Dataset):
         processed_path = os.path.join(DATA_PATH, 'ip/prepared/')
 
         # TODO: provide a better check for if process data exists
-        if os.path.isdir(processed_path): return
+        if os.path.isdir(processed_path) and len(os.listdir(processed_path)) > 0: return
 
+        if os.path.isdir(processed_path):
+            shutil.rmtree(processed_path)
         os.makedirs(processed_path)
 
         pca_tf = PCA(source='src', inplace=True)
-        img_tf = ImageTransform(source='src', window_size=self.K)
+        img_tf = ImageTransform(source='src', window_size=self.window_size, inplace=True)
 
         data = {'src': (self.img, self.gt)}
         pca_tf(data)

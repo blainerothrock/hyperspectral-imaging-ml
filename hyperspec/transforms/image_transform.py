@@ -1,7 +1,9 @@
 from . import TransformException, BaseTransform
 
+import os, shutil
 import numpy as np
 import torch
+
 
 
 class ImageTransform(BaseTransform):
@@ -24,11 +26,24 @@ class ImageTransform(BaseTransform):
                     where x == patchesData.shape[0] == X.shape[0]**2.
     """
 
-    def __init__(self, window_size=5, removeZeroLabels=True, source='raw', output='transformed', inplace=False):
+    def __init__(self,
+                 window_size=5,
+                 removeZeroLabels=True,
+                 cache_dir=os.path.expanduser('~/.hyperspec/tmp/'),
+                 source='raw',
+                 output='transformed',
+                 inplace=False):
+
         super().__init__(source, output, inplace)
 
         self.windowSize = window_size
         self.removeZeroLabels = removeZeroLabels
+        self.cache_dir = cache_dir
+
+        if os.path.isdir(cache_dir):
+            shutil.rmtree(cache_dir)
+
+        os.makedirs(cache_dir)
 
     def __call__(self, data):
 
@@ -64,7 +79,7 @@ class ImageTransform(BaseTransform):
         newX[x_offset:X.shape[0] + x_offset, y_offset:X.shape[1] + y_offset, :] = X
         return newX
 
-    def _create_image_cubes(self, X, y, device=torch.device('cpu')):
+    def _create_image_cubes(self, X, y):
         """
         :param X: (features) A 3-dimensional numpy array of size (x, y, z) where x == y and z == numComponents.
         :param y: (labels) A 2-dimensional numpy array of size (x, y) where x == y == X.shape[0] == X.shape[1].
@@ -75,33 +90,36 @@ class ImageTransform(BaseTransform):
                  patchesLabels: (label patches) A 1-dimensional numpy array of size (x)
                     where x == patchesData.shape[0] == X.shape[0]**2.
         """
-        X = torch.Tensor(X).to(device)
-        y = torch.Tensor(y).to(device)
         margin = int((self.windowSize - 1) / 2)
         zeroPaddedX = self._pad_with_zeros(X, margin=margin)  # 3-dim numpy array of size (x+margin, y+margin, z)
-        # split patches
         total_split = X.shape[0] * X.shape[1]
 
-        patchesData = torch.Tensor(np.zeros((X.shape[0] * X.shape[1], self.windowSize, self.windowSize, X.shape[2]))).to(device)
-        # patchesData = []
-        patchesLabels = torch.Tensor(np.zeros((X.shape[0] * X.shape[1]))).to(device)
-        # patchesLabels = []
+        patchesData = np.zeros((X.shape[0] * X.shape[1], self.windowSize, self.windowSize, X.shape[2]), dtype=np.int16)
+        patchesLabels = np.zeros((X.shape[0] * X.shape[1]), dtype=np.int16)
+        # patchesData = np.memmap(
+        #     os.path.join(self.cache_dir, 'patchesData.dat'),
+        #     dtype='uint16',
+        #     mode='w+',
+        #     shape=(X.shape[0] * X.shape[1], self.windowSize, self.windowSize, X.shape[2])
+        # )
+        # patchesLabels = np.memmap(
+        #     os.path.join(self.cache_dir, 'patchesLabels.dat'),
+        #     dtype='uint16',
+        #     mode='w+',
+        #     shape=(X.shape[0] * X.shape[1])
+        # )
         patchIndex = 0
 
         for r in range(margin, zeroPaddedX.shape[0] - margin):
             for c in range(margin, zeroPaddedX.shape[1] - margin):
-                patch = torch.Tensor(zeroPaddedX[r - margin:r + margin + 1, c - margin:c + margin + 1]).to(device)
+                patch = zeroPaddedX[r - margin:r + margin + 1, c - margin:c + margin + 1]
                 patchesData[patchIndex, :, :, :] = patch
                 patchesLabels[patchIndex] = y[r - margin, c - margin]
-                # patchesData.append(patch)
-                # patchesLabels.append(y[r - margin, c - margin])
                 patchIndex += 1
-
-        # patchesData = np.array(patchesData)
-        # patchesLabels = np.array(patchesLabels)
 
         if self.removeZeroLabels:
             patchesData = patchesData[patchesLabels > 0, :, :, :]
             patchesLabels = patchesLabels[patchesLabels > 0]
             patchesLabels -= 1
-        return patchesData.cpu().numpy(), patchesLabels.cpu().numpy()
+        return patchesData, patchesLabels
+

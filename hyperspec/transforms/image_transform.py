@@ -94,7 +94,7 @@ class ImageTransform(BaseTransform):
         zeroPaddedX = self._pad_with_zeros(X, margin=margin)  # 3-dim numpy array of size (x+margin, y+margin, z)
         total_split = X.shape[0] * X.shape[1]
 
-        patchesData = np.zeros((X.shape[0] * X.shape[1], self.windowSize, self.windowSize, X.shape[2]), dtype=np.uint16)
+        patchesData = np.zeros((X.shape[0] * X.shape[1], self.windowSize, self.windowSize, X.shape[2]), dtype=np.int16)
         patchesLabels = np.zeros((X.shape[0] * X.shape[1]), dtype=np.int16)
         patchIndex = 0
 

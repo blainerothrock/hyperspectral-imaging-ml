@@ -3,7 +3,7 @@ import shutil
 
 import torch
 from hyperspec.utility.download import download_file, DatasetURL
-from hyperspec.transforms import Compose, PCA, ImageTransform
+from hyperspec.transforms import Compose, PCA, ImageTransform, ToTensor
 from hyperspec import DATA_PATH
 from torch.utils.data import Dataset
 from scipy import io
@@ -22,6 +22,10 @@ class IndianPineDataset(Dataset):
 
         self.K = K
         self.window_size = window_size
+        self.prepared_data_path = None
+        self._length = 0
+        self.img = []
+        self.labels = None
 
         file_name = 'indian_pines_corrected.mat'
         self.corrected_path = os.path.join(DATA_PATH, file_name)
@@ -48,11 +52,22 @@ class IndianPineDataset(Dataset):
 
         self.preprocess()
 
+    def __len__(self):
+        return len(self.img)
+
+    def __getitem__(self, i):
+        return self.img[i], self.labels[i]
+
     def preprocess(self):
         processed_path = os.path.join(DATA_PATH, 'ip/prepared/')
+        self.prepared_data_path = os.path.join(processed_path, 'ip_prepared.pt')
 
         # TODO: provide a better check for if process data exists
-        if os.path.isdir(processed_path) and len(os.listdir(processed_path)) > 0: return
+        if os.path.isdir(processed_path) and len(os.listdir(processed_path)) > 0:
+            data = torch.load(self.prepared_data_path)
+            self.img = data['X']
+            self.labels = data['y']
+            return
 
         if os.path.isdir(processed_path):
             shutil.rmtree(processed_path)
@@ -60,13 +75,16 @@ class IndianPineDataset(Dataset):
 
         pca_tf = PCA(source='src', inplace=True)
         img_tf = ImageTransform(source='src', window_size=self.window_size, inplace=True)
+        tensor_tf = ToTensor(sorce='src', inplace=True)
 
         data = {'src': (self.img, self.gt)}
         pca_tf(data)
         img_tf(data)
+        tensor_tf(data)
 
         img, labels = data['src']
+        self.img = img
+        self.labels = labels
 
         to_save = {'X': img, 'y': labels}
-        torch.save(to_save, open(os.path.join(processed_path, 'ip_prepared.pt'), 'wb'))
-        print()
+        torch.save(to_save, open(self.prepared_data_path, 'wb'))

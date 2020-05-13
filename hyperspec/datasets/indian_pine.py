@@ -54,11 +54,15 @@ class IndianPineDataset(Dataset):
 
         os.makedirs(processed_path)
 
-        # apply PCA 20 => 30 dimensions
-        img, pca = PCA.apply_pca(self.img, self.K)
+        pca_tf = PCA(source='src', inplace=True)
+        img_tf = ImageTransform(source='src', window_size=self.K)
 
-        IT = ImageTransform()
-        patchesX, patchesY = IT.create_image_cubes(img, self.gt, self.window_size, device=torch.device('cuda'))
-        to_save = {'X': patchesX.cpu().numpy(), 'y': patchesY.cpu().numpy()}
+        data = {'src': (self.img, self.gt)}
+        pca_tf(data)
+        img_tf(data)
+
+        img, labels = data['src']
+
+        to_save = {'X': img, 'y': labels}
         torch.save(to_save, open(os.path.join(processed_path, 'ip_prepared.pt'), 'wb'))
         print()

@@ -15,9 +15,9 @@ class TestImageTransform:
         pass
 
     def test_createImageCubes(self):
-        X = np.zeros((50, 50, 10))
-        Y = np.ones((50, 50))
-        window_size = 2
+        X = np.zeros((145, 145, 30))
+        Y = np.ones((145, 145))
+        window_size = 25
         IT = ImageTransform(window_size=window_size, inplace=True)
         data = {'raw': (X, Y)}
         data = IT(data)

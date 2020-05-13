@@ -14,6 +14,6 @@ def test_download():
     os.remove(file_path)
 
 
-def test_purge_data():
-    purge_data()
-    assert not os.path.isdir(DATA_PATH)
+# def test_purge_data():
+#     purge_data()
+#     assert not os.path.isdir(DATA_PATH)

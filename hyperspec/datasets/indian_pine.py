@@ -18,7 +18,7 @@ class IndianPineDataset(Dataset):
         TODO:
     """
 
-    def __init__(self, force_download=False, patch_size=1, K=30, window_size=25):
+    def __init__(self, force_download=False, K=30, window_size=25):
 
         self.K = K
         self.window_size = window_size
@@ -73,9 +73,9 @@ class IndianPineDataset(Dataset):
             shutil.rmtree(processed_path)
         os.makedirs(processed_path)
 
-        pca_tf = PCA(source='src', inplace=True)
+        pca_tf = PCA(num_components=self.K, source='src', inplace=True)
         img_tf = ImageTransform(source='src', window_size=self.window_size, inplace=True)
-        tensor_tf = ToTensor(sorce='src', inplace=True)
+        tensor_tf = ToTensor(source='src', inplace=True)
 
         data = {'src': (self.img, self.gt)}
         pca_tf(data)

@@ -26,11 +26,12 @@ class ToTensor(BaseTransform):
     def __call__(self, data):
         super().__call__(data)
 
-        tensor = data[self.source].copy()
+        img, labels = data[self.source]
 
-        tensor = torch.tensor(tensor.data, dtype=torch.float32, device=self.device)
+        img_tensor = torch.tensor(img, dtype=torch.float64, device=self.device)
+        label_tensor = torch.tensor(labels, dtype=torch.float64, device=self.device)
 
-        super().update(data, tensor)
+        super().update(data, (img_tensor, label_tensor))
 
     def __repr__(self):
         return (

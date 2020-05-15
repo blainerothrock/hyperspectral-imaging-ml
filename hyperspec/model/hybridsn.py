@@ -20,16 +20,17 @@ class HybridSN(nn.Module):
         super(HybridSN, self).__init__()
 
         self.conv3d = nn.Sequential(
-            nn.Conv3d(1, 8, (3, 3, 7)),
+            nn.Conv3d(25, 8, (3, 5, 1)),
             nn.ReLU(),
-            nn.Conv3d(8, 16, (3, 3, 5)),
+            nn.Conv3d(8, 16, (3, 5, 1)),
             nn.ReLU(),
-            nn.Conv3d(16, 32, (3, 3, 3)),
+            nn.Conv3d(16, 32, (3, 4, 1)),
             nn.ReLU()
         )
 
         self.conv2d = nn.Sequential(
-            nn.Conv2d(576, 64, (3, 3)),
+            #note that 384 is the quantity of features(12 * 32)
+            nn.Conv2d(384, 64, (3, 3)),
             nn.ReLU()
         )
 
@@ -49,7 +50,8 @@ class HybridSN(nn.Module):
 
         x = self.conv3d(x)
 
-        x = x.reshape((-1, x.shape[1]* x.shape[4],x.shape[2] , x.shape[3]))
+
+        x = x.reshape(-1, x.shape[0]*x.shape[1],x.shape[3],x.shape[2] )
         x = self.conv2d(x)
         x = torch.flatten(x)
         x = x.view(-1, 16)

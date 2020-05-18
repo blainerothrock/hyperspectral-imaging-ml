@@ -53,6 +53,8 @@ class ImageTransform(BaseTransform):
         super().__call__(data)
 
         img, labels = data[self.source]
+        img = img.copy()
+        labels = labels.copy()
         img, labels = self._create_image_cubes(img, labels)
 
         return super().update(data, (img, labels))
@@ -94,8 +96,8 @@ class ImageTransform(BaseTransform):
         zeroPaddedX = self._pad_with_zeros(X, margin=margin)  # 3-dim numpy array of size (x+margin, y+margin, z)
         total_split = X.shape[0] * X.shape[1]
 
-        patchesData = np.zeros((X.shape[0] * X.shape[1], self.windowSize, self.windowSize, X.shape[2]), dtype=np.float64)
-        patchesLabels = np.zeros((X.shape[0] * X.shape[1]), dtype=np.float64)
+        patchesData = np.zeros((X.shape[0] * X.shape[1], self.windowSize, self.windowSize, X.shape[2]))
+        patchesLabels = np.zeros((X.shape[0] * X.shape[1]))
         patchIndex = 0
 
         for r in range(margin, zeroPaddedX.shape[0] - margin):

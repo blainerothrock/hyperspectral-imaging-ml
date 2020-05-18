@@ -20,9 +20,9 @@ class HybridSN(nn.Module):
         super(HybridSN, self).__init__()
 
         self.conv3d = nn.Sequential(
-            nn.Conv3d(1, 8, (3, 3, 7)),
+            nn.Conv3d(1, 8, (7, 3, 3)),
             nn.ReLU(),
-            nn.Conv3d(8, 16, (3, 3, 5)),
+            nn.Conv3d(8, 16, (5, 3, 3)),
             nn.ReLU(),
             nn.Conv3d(16, 32, (3, 3, 3)),
             nn.ReLU()
@@ -48,7 +48,7 @@ class HybridSN(nn.Module):
         x = self.conv3d(x)
 
         # 2D
-        x = x.view(x.shape[0], x.shape[1] * x.shape[-1], x.shape[2], x.shape[3])
+        x = x.view(x.shape[0], x.shape[1] * x.shape[2], x.shape[3], x.shape[4])
         x = self.conv2d(x)
 
         # Fully-Connected

@@ -27,6 +27,8 @@ class ToTensor(BaseTransform):
         super().__call__(data)
 
         img, labels = data[self.source]
+        img = img.copy()
+        labels = labels.copy()
 
         img_tensor = torch.tensor(img, dtype=torch.float64, device=self.device)
         label_tensor = torch.tensor(labels, dtype=torch.float64, device=self.device)

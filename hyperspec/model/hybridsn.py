@@ -16,48 +16,44 @@ import torch
 
 
 class HybridSN(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes=16, dropout=0.4):
         super(HybridSN, self).__init__()
 
         self.conv3d = nn.Sequential(
-            nn.Conv3d(25, 8, (3, 5, 1)),
+            nn.Conv3d(1, 8, (3, 3, 7)),
             nn.ReLU(),
-            nn.Conv3d(8, 16, (3, 5, 1)),
+            nn.Conv3d(8, 16, (3, 3, 5)),
             nn.ReLU(),
-            nn.Conv3d(16, 32, (3, 4, 1)),
+            nn.Conv3d(16, 32, (3, 3, 3)),
             nn.ReLU()
         )
 
         self.conv2d = nn.Sequential(
-            #note that 384 is the quantity of features(12 * 32)
-            nn.Conv2d(384, 64, (3, 3)),
+            nn.Conv2d(576, 64, kernel_size=3),
             nn.ReLU()
         )
 
         self.linear = nn.Sequential(
-            nn.Linear(1156,16),
+            nn.Linear(18496, 256),
             nn.ReLU(),
-            nn.Dropout(p=0.4),
-            nn.Linear(16, 1),
-            nn.Dropout(p=0.4),
-            nn.ReLU()
+            nn.Dropout(dropout),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(128, num_classes)
         )
 
-
-
     def forward(self, x):
-
-
+        # 3D
         x = self.conv3d(x)
 
-
-        x = x.reshape(-1, x.shape[0]*x.shape[1],x.shape[3],x.shape[2] )
+        # 2D
+        x = x.view(x.shape[0], x.shape[1] * x.shape[-1], x.shape[2], x.shape[3])
         x = self.conv2d(x)
-        x = torch.flatten(x)
-        x = x.view(-1, 16)
-        x = x.reshape(x.shape[1],x.shape[0])
-        x = self.linear(x)
-        #final change might be unnecessary because it change in output shape --> same tensors
-        x = x.view(-1, 16)
 
-        return x[0]
+        # Fully-Connected
+        x = x.flatten(start_dim=1)
+        x = self.linear(x)
+
+        x = x.softmax(dim=1)
+        return x

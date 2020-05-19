@@ -30,8 +30,8 @@ class ToTensor(BaseTransform):
         img = img.copy()
         labels = labels.copy()
 
-        img_tensor = torch.tensor(img, dtype=torch.float64, device=self.device)
-        label_tensor = torch.tensor(labels, dtype=torch.float64, device=self.device)
+        img_tensor = torch.tensor(img, device=self.device)
+        label_tensor = torch.tensor(labels, device=self.device)
 
         super().update(data, (img_tensor, label_tensor))
 

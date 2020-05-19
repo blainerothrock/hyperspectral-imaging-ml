@@ -93,19 +93,17 @@ class ImageTransform(BaseTransform):
                     where x == patchesData.shape[0] == X.shape[0]**2.
         """
         margin = int((self.windowSize - 1) / 2)
-        zeroPaddedX = self._pad_with_zeros(X, margin=margin)  # 3-dim numpy array of size (x+margin, y+margin, z)
-        total_split = X.shape[0] * X.shape[1]
-
+        zeroPaddedX = self._pad_with_zeros(X, margin=margin)
+        # split patches
         patchesData = np.zeros((X.shape[0] * X.shape[1], self.windowSize, self.windowSize, X.shape[2]))
         patchesLabels = np.zeros((X.shape[0] * X.shape[1]))
         patchIndex = 0
-
         for r in range(margin, zeroPaddedX.shape[0] - margin):
             for c in range(margin, zeroPaddedX.shape[1] - margin):
                 patch = zeroPaddedX[r - margin:r + margin + 1, c - margin:c + margin + 1]
                 patchesData[patchIndex, :, :, :] = patch
                 patchesLabels[patchIndex] = y[r - margin, c - margin]
-                patchIndex += 1
+                patchIndex = patchIndex + 1
 
         if self.removeZeroLabels:
             patchesData = patchesData[patchesLabels > 0, :, :, :]

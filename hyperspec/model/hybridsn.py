@@ -20,25 +20,25 @@ class HybridSN(nn.Module):
         super(HybridSN, self).__init__()
 
         self.conv3d = nn.Sequential(
-            nn.Conv3d(1, 8, (7, 3, 3)),
-            nn.ReLU(),
-            nn.Conv3d(8, 16, (5, 3, 3)),
-            nn.ReLU(),
+            nn.Conv3d(1, 8, (3, 3, 7)),
+            nn.ReLU(True),
+            nn.Conv3d(8, 16, (3, 3, 5)),
+            nn.ReLU(True),
             nn.Conv3d(16, 32, (3, 3, 3)),
-            nn.ReLU()
+            nn.ReLU(True)
         )
 
         self.conv2d = nn.Sequential(
             nn.Conv2d(576, 64, kernel_size=3),
-            nn.ReLU()
+            nn.ReLU(True)
         )
 
         self.linear = nn.Sequential(
             nn.Linear(18496, 256),
-            nn.ReLU(),
+            nn.ReLU(True),
             nn.Dropout(dropout),
             nn.Linear(256, 128),
-            nn.ReLU(),
+            nn.ReLU(True),
             nn.Dropout(dropout),
             nn.Linear(128, num_classes)
         )
@@ -48,12 +48,12 @@ class HybridSN(nn.Module):
         x = self.conv3d(x)
 
         # 2D
-        x = x.view(x.shape[0], x.shape[1] * x.shape[2], x.shape[3], x.shape[4])
+        x = x.view(x.shape[0], x.shape[1] * x.shape[4], x.shape[2], x.shape[3])
         x = self.conv2d(x)
 
         # Fully-Connected
         x = x.flatten(start_dim=1)
         x = self.linear(x)
 
-        x = x.softmax(dim=1)
+        x = nn.functional.softmax(x, 1)
         return x

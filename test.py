@@ -3,34 +3,40 @@ from torch.utils.data import DataLoader
 from hyperspec.datasets import IndianPineDataset
 from hyperspec.model import HybridSN
 from torchsummary import summary
+import numpy as np
 
 ds = IndianPineDataset()
 dl = DataLoader(ds, batch_size=256, shuffle=True)
 
 device = torch.device('cuda')
 
-batch = next(iter(dl))
 
-model = HybridSN().to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-6)
+model = HybridSN()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-06)
 loss_fn = torch.nn.CrossEntropyLoss()
 
-summary(model, (1,30,25,25))
+# summary(model, (1,25,25,30))
+
+model.to(device)
+model.train()
 
 for epoch in range(100):
     print('epoch {}'.format(epoch+1))
-    datas, labels = batch
-    for i in range(256):
-        data = datas[i].view(30, 25, 25).unsqueeze(0).unsqueeze(1).float().to(device)
-        # data = datas[i].unsqueeze(0).unsqueeze(1).float().to(device)
-        label = labels[i].unsqueeze(0).to(torch.int64).to(device)
+    running_loss = []
+    for batch in dl:
+        data, label = batch
+        n = data.numpy()
+        # print('mean: {:.4f}, min: {:.4f}, max: {:.4f}, std: {:.4f}'.format(np.mean(n), np.min(n), np.max(n), np.std(n)))
+        data = data.unsqueeze(1).float().to(device)
+        label = label.to(torch.int64).to(device)
 
-        model.train()
         optimizer.zero_grad()
 
         output = model(data)
-        loss = loss_fn(output, label)
-        loss.backward()
+        _loss = loss_fn(output, label)
+        _loss.backward()
         optimizer.step()
+        running_loss.append(_loss.cpu().detach().item())
 
-    print('  - {}: Loss: {}'.format(epoch, loss.cpu().item()))
+    print('  - {}: Loss: {}'.format(epoch, np.mean(running_loss)))
+    running_loss = []

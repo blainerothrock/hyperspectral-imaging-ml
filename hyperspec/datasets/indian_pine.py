@@ -40,15 +40,7 @@ class IndianPineDataset(Dataset):
         img = io.loadmat(self.corrected_path)
         self.img = img['indian_pines_corrected']
 
-        self.rgb_bands = (43, 21, 11)  # AVIRIS sensor
-
-        self.gt = io.loadmat(self.gt_path)['indian_pines_gt']
-        self.labels = ["Undefined", "Alfalfa", "Corn-notill", "Corn-mintill",
-                       "Corn", "Grass-pasture", "Grass-trees",
-                       "Grass-pasture-mowed", "Hay-windrowed", "Oats",
-                       "Soybean-notill", "Soybean-mintill", "Soybean-clean",
-                       "Wheat", "Woods", "Buildings-Grass-Trees-Drives",
-                       "Stone-Steel-Towers"]
+        self.labels = io.loadmat(self.gt_path)['indian_pines_gt']
 
         self.preprocess()
 
@@ -65,9 +57,13 @@ class IndianPineDataset(Dataset):
         # TODO: provide a better check for if process data exists
         if os.path.isdir(processed_path) and len(os.listdir(processed_path)) > 0:
             data = torch.load(self.prepared_data_path)
-            self.img = data['X']
-            self.labels = data['y']
-            return
+            img = data['X']
+            labels = data['y']
+
+            if img.shape[0] == self.window_size and img.shape[2] == self.K:
+                self.img = img
+                self.labels = labels
+                return
 
         if os.path.isdir(processed_path):
             shutil.rmtree(processed_path)
@@ -77,7 +73,7 @@ class IndianPineDataset(Dataset):
         img_tf = ImageTransform(source='src', window_size=self.window_size, inplace=True)
         tensor_tf = ToTensor(source='src', inplace=True)
 
-        data = {'src': (self.img, self.gt)}
+        data = {'src': (self.img, self.labels)}
         pca_tf(data)
         img_tf(data)
         tensor_tf(data)

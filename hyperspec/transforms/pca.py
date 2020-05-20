@@ -25,6 +25,8 @@ class PCA(BaseTransform):
         super().__call__(data)
 
         X, y = data[self.source]
+        X = X.copy()
+        y = y.copy()
         X = self._apply_pca(X)
 
         super().update(data, (X, y))

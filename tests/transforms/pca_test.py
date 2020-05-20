@@ -9,7 +9,7 @@ class TestPCATransform:
         oldX = np.zeros((255,255,255))
         num_components = 2
         tf = PCA(num_components=num_components)
-        data = {'raw': (oldX, None)}
+        data = {'raw': (oldX, [])}
         tf(data)
         newX, _ = data['raw']
         assert newX is not None

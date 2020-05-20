@@ -55,5 +55,5 @@ class HybridSN(nn.Module):
         x = x.flatten(start_dim=1)
         x = self.linear(x)
 
-        x = nn.functional.softmax(x, 1)
+        x = nn.functional.log_softmax(x, 1)
         return x

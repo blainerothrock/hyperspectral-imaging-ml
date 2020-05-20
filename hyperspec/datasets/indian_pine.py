@@ -57,9 +57,13 @@ class IndianPineDataset(Dataset):
         # TODO: provide a better check for if process data exists
         if os.path.isdir(processed_path) and len(os.listdir(processed_path)) > 0:
             data = torch.load(self.prepared_data_path)
-            self.img = data['X']
-            self.labels = data['y']
-            return
+            img = data['X']
+            labels = data['y']
+
+            if img.shape[0] == self.window_size and img.shape[2] == self.K:
+                self.img = img
+                self.labels = labels
+                return
 
         if os.path.isdir(processed_path):
             shutil.rmtree(processed_path)

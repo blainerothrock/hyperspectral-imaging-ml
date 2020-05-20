@@ -13,7 +13,7 @@ device = torch.device('cuda')
 
 model = HybridSN()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-06)
-loss_fn = torch.nn.CrossEntropyLoss()
+loss_fn = torch.nn.NLLLoss()
 
 # summary(model, (1,25,25,30))
 
@@ -26,7 +26,6 @@ for epoch in range(100):
     for batch in dl:
         data, label = batch
         n = data.numpy()
-        # print('mean: {:.4f}, min: {:.4f}, max: {:.4f}, std: {:.4f}'.format(np.mean(n), np.min(n), np.max(n), np.std(n)))
         data = data.unsqueeze(1).float().to(device)
         label = label.to(torch.int64).to(device)
 

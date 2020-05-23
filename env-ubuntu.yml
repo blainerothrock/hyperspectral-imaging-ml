@@ -1,80 +1,90 @@
-name: hyperspec
+name: hyperspectral-imaging-ml
 channels:
   - pytorch
   - conda-forge
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
-  - _openmp_mutex=4.5=1_llvm
+  - _openmp_mutex=4.5=0_gnu
   - attrs=19.3.0=py_0
+  - binutils_impl_linux-64=2.34=h53a641e_2
   - blas=1.0=mkl
-  - brotlipy=0.7.0=py38h1e0a361_1000
+  - brotlipy=0.7.0=py37h8f50634_1000
   - ca-certificates=2020.4.5.1=hecc5488_0
-  - certifi=2020.4.5.1=py38h32f6830_0
-  - cffi=1.14.0=py38hd463f26_0
-  - chardet=3.0.4=py38h32f6830_1006
-  - coverage=5.1=py38h1e0a361_0
-  - cryptography=2.9.2=py38h766eaa4_0
+  - certifi=2020.4.5.1=py37hc8dfbb8_0
+  - cffi=1.14.0=py37hd463f26_0
+  - chardet=3.0.4=py37hc8dfbb8_1006
+  - cryptography=2.9.2=py37hb09aad4_0
   - cudatoolkit=10.2.89=hfd86e86_1
-  - freetype=2.10.1=he06d7ca_0
+  - freetype=2.10.2=he06d7ca_0
+  - gcc_impl_linux-64=7.5.0=hd420e75_6
+  - gfortran_impl_linux-64=7.5.0=hdf63c60_6
+  - gin-config=0.3.0=pyh9f0ad1d_0
+  - gxx_impl_linux-64=7.5.0=hdf63c60_6
   - idna=2.9=py_1
-  - joblib=0.14.1=py_0
+  - ignite=0.3.0=py37_0
+  - importlib-metadata=1.6.0=py37hc8dfbb8_0
+  - importlib_metadata=1.6.0=0
+  - intel-openmp=2020.1=217
+  - joblib=0.15.1=py_0
   - jpeg=9c=h14c3975_1001
-  - ld_impl_linux-64=2.34=h53a641e_0
-  - libblas=3.8.0=14_mkl
-  - libcblas=3.8.0=14_mkl
+  - ld_impl_linux-64=2.34=h53a641e_2
+  - libblas=3.8.0=15_mkl
+  - libcblas=3.8.0=15_mkl
   - libffi=3.2.1=he1b5a44_1007
   - libgcc-ng=9.2.0=h24d8f2e_2
-  - libgfortran-ng=7.3.0=hdf63c60_5
-  - liblapack=3.8.0=14_mkl
+  - libgfortran-ng=7.5.0=hdf63c60_6
+  - libgomp=9.2.0=h24d8f2e_2
+  - liblapack=3.8.0=15_mkl
   - libpng=1.6.37=hed695b0_1
   - libstdcxx-ng=9.2.0=hdf63c60_2
   - libtiff=4.1.0=hc7e4089_6
   - libwebp-base=1.1.0=h516909a_3
-  - llvm-openmp=10.0.0=hc9558a2_0
-  - lz4-c=1.9.2=he1b5a44_0
-  - mkl=2019.5=281
-  - mkl-service=2.3.0=py38h516909a_0
-  - mkl_fft=1.1.0=py38hc1659b7_1
-  - mkl_random=1.1.0=py38h962f231_0
-  - more-itertools=8.2.0=py_0
+  - lz4-c=1.9.2=he1b5a44_1
+  - mkl=2020.1=217
+  - mkl-service=2.3.0=py37he904b0f_0
+  - mkl_fft=1.0.15=py37ha843d7b_0
+  - mkl_random=1.1.1=py37h0da4684_0
+  - more-itertools=8.3.0=py_0
   - ncurses=6.1=hf484d3e_1002
   - ninja=1.10.0=hc9558a2_0
-  - numpy=1.18.1=py38h4f9e942_0
-  - numpy-base=1.18.1=py38hde5b4d6_1
+  - numpy=1.18.1=py37h4f9e942_0
+  - numpy-base=1.18.1=py37hde5b4d6_1
   - olefile=0.46=py_0
   - openssl=1.1.1g=h516909a_0
-  - packaging=20.1=py_0
-  - pillow=7.1.2=py38h9776b28_0
-  - pip=20.1=pyh9f0ad1d_0
-  - pluggy=0.13.1=py38h32f6830_1
+  - packaging=20.4=pyh9f0ad1d_0
+  - pillow=7.1.2=py37h718be6c_0
+  - pip=20.1.1=pyh9f0ad1d_0
+  - pluggy=0.13.1=py37hc8dfbb8_1
   - py=1.8.1=py_0
   - pycparser=2.20=py_0
   - pyopenssl=19.1.0=py_1
   - pyparsing=2.4.7=pyh9f0ad1d_0
-  - pysocks=1.7.1=py38h32f6830_1
-  - pytest=5.4.2=py38h32f6830_0
-  - pytest-cov=2.8.1=py_0
-  - python=3.8.2=he5300dc_7_cpython
-  - python_abi=3.8=1_cp38
-  - pytorch=1.5.0=py3.8_cuda10.2.89_cudnn7.6.5_0
+  - pysocks=1.7.1=py37hc8dfbb8_1
+  - pytest=5.4.2=py37hc8dfbb8_0
+  - python=3.7.6=h8356626_5_cpython
+  - python_abi=3.7=1_cp37m
+  - pytorch=1.5.0=py3.7_cuda10.2.89_cudnn7.6.5_0
   - readline=8.0=hf8c457e_0
   - requests=2.23.0=pyh8c360ce_2
-  - scikit-learn=0.22.2.post1=py38hcdab131_0
-  - scipy=1.4.1=py38h18bccfc_3
-  - setuptools=46.1.3=py38h32f6830_0
-  - six=1.14.0=py_1
+  - scikit-learn=0.23.1=py37h8a51577_0
+  - scipy=1.4.1=py37ha3d9a3c_3
+  - setuptools=46.4.0=py37hc8dfbb8_0
+  - six=1.15.0=pyh9f0ad1d_0
   - sqlite=3.30.1=hcee41ef_0
+  - sysroot_linux-64=2.12=h3a0023d_3
+  - threadpoolctl=2.0.0=pyh5ca1d4c_0
   - tk=8.6.10=hed695b0_0
-  - torchvision=0.6.0=py38_cu102
-  - tqdm=4.45.0=pyh9f0ad1d_1
+  - torchvision=0.6.0=py37_cu102
+  - tqdm=4.46.0=pyh9f0ad1d_0
   - urllib3=1.25.9=py_0
   - wcwidth=0.1.9=pyh9f0ad1d_0
   - wheel=0.34.2=py_1
   - xz=5.2.5=h516909a_0
+  - zipp=3.1.0=py_0
   - zlib=1.2.11=h516909a_1006
   - zstd=1.4.4=h6597ccf_3
   - pip:
-    - torch-summary==1.1.9
-prefix: /home/b/anaconda3/envs/hyperspec
+    - torchsummary==1.5.1
+prefix: /home/b/anaconda3/envs/hyperspectral-imaging-ml
 

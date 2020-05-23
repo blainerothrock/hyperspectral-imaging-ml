@@ -1,0 +1,12 @@
+train.batch_size=256
+train.learning_rate=0.001
+train.weight_decay=1e-6
+train.max_epochs=100
+
+HybridSN.num_classes=16
+HybridSN.dropout=0.4
+
+indian_pine_split.force_download=False
+indian_pine_split.K=30
+indian_pine_split.window_size=25
+indian_pine_split.train_split=0.3

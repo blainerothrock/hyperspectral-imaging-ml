@@ -1,4 +1,4 @@
-name: hyperspectral-imaging-ml
+name: hyperspec
 channels:
   - pytorch
   - conda-forge

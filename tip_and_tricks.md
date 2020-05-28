@@ -2,8 +2,7 @@
 
 ## Conversion to PyTorch
 ### Why?
-The main reason we converted this code was to learn. This paper's model seemed like a reactivity simple model in that 
-it used out-of-the-box implementation of well studied components of deep learning. really just convolutional layers,
+The main reason we converted this code was to learn. This paper's model seemed like a relatively simple model using out-of-the-box implementations of well studied components of deep learning. really just convolutional layers,
 fully connected layers and dropout. Also, this model has a state of the art on a few of the Hyperspectral imaging
 leaderboard on papers with code, something 100% accuracy. 
 

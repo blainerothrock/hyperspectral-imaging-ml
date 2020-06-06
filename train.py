@@ -11,11 +11,8 @@ from ignite_utils import create_engine, prepare_batch
 from torchsummary import summary
 
 @gin.configurable()
-def train(batch_size, learning_rate, weight_decay, max_epochs):
-    train_ds, test_ds = indian_pine_split()
-
-    train_dl = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
-    test_dl = DataLoader(test_ds, batch_size=batch_size, shuffle=True)
+def train(learning_rate, weight_decay, max_epochs):
+    train_dl, test_dl = indian_pine_split()
 
     device = torch.device('cuda')
 

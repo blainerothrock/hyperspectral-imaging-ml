@@ -1,22 +1,37 @@
 import os
-import shutil
 import gin
 
 import torch
+from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
 from hyperspec.utility.download import download_file, DatasetURL
 from hyperspec.transforms import Compose, PCA, ImageTransform, ToTensor
 from hyperspec import DATA_PATH
-from torch.utils.data import Dataset
 from scipy import io
 import numpy as np
 
 
 @gin.configurable()
-def indian_pine_split(force_download=False, K=30, window_size=25, train_split=0.7):
-    train_ds = IndianPineDataset(force_download, K, window_size, 'train', train_split)
-    test_ds = IndianPineDataset(force_download, K, window_size, 'test', train_split)
-    return train_ds, test_ds
+def indian_pine_split(batch_size=128, train_split=0.7, shuffle=True):
+    ds = IndianPineDataset()
+    ds_size = len(ds)
+    indices = list(range(ds_size))
+    offset = int(np.floor(train_split * ds_size))
 
+    if shuffle:
+        np.random.shuffle(indices)
+
+    train_indices, test_indices = indices[:offset], indices[offset + 1:]
+
+    train_sampler = SubsetRandomSampler(train_indices)
+    test_sampler = SubsetRandomSampler(test_indices)
+
+    train_dl = DataLoader(ds, batch_size=batch_size, sampler=train_sampler)
+    test_dl = DataLoader(ds, batch_size=batch_size, sampler=test_sampler)
+
+    return train_dl, test_dl
+
+
+@gin.configurable()
 class IndianPineDataset(Dataset):
     """
     Indian Pine Hyperspectral dataset (Purdue University)
@@ -25,15 +40,13 @@ class IndianPineDataset(Dataset):
         TODO:
     """
 
-    def __init__(self, force_download=False, K=30, window_size=25, mode='train', train_split=0.7):
+    def __init__(self, force_download=False, K=30, window_size=25):
 
         self.K = K
         self.window_size = window_size
         self.prepared_data_path = None
         self._length = 0
         self.img = []
-        self.mode = mode
-        self.train_split = train_split
         self.labels = None
 
         file_name = 'indian_pines_corrected.mat'
@@ -61,10 +74,11 @@ class IndianPineDataset(Dataset):
 
     def preprocess(self):
         processed_path = os.path.join(DATA_PATH, 'ip/prepared/')
-        self.prepared_data_path = os.path.join(processed_path, 'ip_prepared_{}.pt'.format(self.mode))
+        self.prepared_data_path = os.path.join(processed_path, 'ip_prepared.pt')
 
         # TODO: provide a better check for if process data exists
-        if os.path.isdir(processed_path) and len(os.listdir(processed_path)) > 0 and os.path.exists(self.prepared_data_path):
+        if os.path.isdir(processed_path) and len(os.listdir(processed_path)) > 0 and os.path.exists(
+                self.prepared_data_path):
             data = torch.load(self.prepared_data_path)
             img = data['X']
             labels = data['y']
@@ -89,15 +103,16 @@ class IndianPineDataset(Dataset):
         tensor_tf(data)
 
         img, labels = data['src']
+        self.img = img
+        self.labels = labels
 
-        offset = int(len(img) * self.train_split)
-        if self.mode == 'train':
-            self.img = img[: offset]
-            self.labels = labels[: offset]
-        elif self.mode == 'test':
-            self.img = img[offset:]
-            self.labels = labels[offset:]
-
+        # offset = int(len(img) * self.train_split)
+        # if self.mode == 'train':
+        #     self.img = img[: offset]
+        #     self.labels = labels[: offset]
+        # elif self.mode == 'test':
+        #     self.img = img[offset:]
+        #     self.labels = labels[offset:]
 
         to_save = {'X': self.img, 'y': self.labels}
         torch.save(to_save, open(self.prepared_data_path, 'wb'))

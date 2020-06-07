@@ -106,13 +106,5 @@ class IndianPineDataset(Dataset):
         self.img = img
         self.labels = labels
 
-        # offset = int(len(img) * self.train_split)
-        # if self.mode == 'train':
-        #     self.img = img[: offset]
-        #     self.labels = labels[: offset]
-        # elif self.mode == 'test':
-        #     self.img = img[offset:]
-        #     self.labels = labels[offset:]
-
         to_save = {'X': self.img, 'y': self.labels}
         torch.save(to_save, open(self.prepared_data_path, 'wb'))

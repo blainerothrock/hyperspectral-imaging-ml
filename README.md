@@ -2,6 +2,27 @@
 ![Test](https://github.com/blainerothrock/hyperspectral-imaging-ml/workflows/Test/badge.svg)
 [![codecov](https://codecov.io/gh/blainerothrock/hyperspectral-imaging-ml/branch/master/graph/badge.svg)](https://codecov.io/gh/blainerothrock/hyperspectral-imaging-ml)
 
+## Reproducing HybridSN
+* Create a conda environment with your OS using `env-mac.yml` or `env-ubuntu.yml`:
+```shell script
+conda env create -f env-ubuntu.yml
+conda activate hyperspec
+```
+* **Optional** update the `gin.config` with desired hyper-parameters. Current configuration matches the paper.
+* Run the training script
+```shell script
+python train.py
+```
+* View training results in Tensorboard
+```shell script
+tensorboard --logdir runs
+```
+**Note**: data will be downloaded to `~/.hyperspec/`
+
+### reporting
+* [Reproducibility Report](reproducibility_report.md)
+* [Tips and Tricks](tips_and_tricks.md)
+
 ## Papers:
 * [Deep Learning for Classification
 of Hyperspectral Data: A Comparative Review](https://arxiv.org/pdf/1904.10674.pdf)
